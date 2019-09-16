@@ -1,0 +1,72 @@
+---
+title: "Weigelt Production"
+author: "Aputta"
+date: "14/09/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE , warning = FALSE )
+dir.create("image")
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(lpSolveAPI)
+```
+
+```[r,eval=false]
+set up the WP problem.
+
+# make lpobject with 0 constraints and 9 decision variable 
+lprec <- make.lp(0,9)
+
+# now create the objective function thedefault is a minimization problem.
+set.objfn(lprec,c(420,360,300,420,360,300,420,360,300))
+
+#as defaultis mininzation problem,we change the direction to set maximization 
+lp.control(lprec,sense='max')
+
+# Capacity Constraints
+add.constraint(lprec,c(1,1,1,0,0,0,0,0,0),"<=",750)
+add.constraint(lprec,c(0,0,0,1,1,1,0,0,0),"<=",900)
+add.constraint(lprec,c(0,0,0,0,0,0,1,1,1),"<=",450)
+
+# Storage space
+add.constraint(lprec,c(20,15,12,0,0,0,0,0,0),"<=",13000)
+add.constraint(lprec,c(0,0,0,20,15,12,0,0,0),"<=",12000)
+add.constraint(lprec,c(0,0,0,0,0,0,20,15,12),"<=",5000)
+
+# Sales Forecast
+add.constraint(lprec,c(1,0,0,1,0,0,1,0,0),">=",900)
+add.constraint(lprec,c(0,1,0,0,1,0,0,1,0),">=",1200)
+add.constraint(lprec,c(0,0,1,0,0,1,0,0,1),">=",750)
+
+
+set.bounds(lprec, lower = c(0, 0), columns = c(1, 9))
+# set variable names and name the constraints
+RowNames1 <- ("cap1","cap2","cap3","stg1","stg2","stg3","SALE1","SALE2","SALE3")
+ColNames1 <- ("P1L","P1M","P1S","P2L","P2M","P2S","P3L","P3M","P3S")
+dimnames(lprec) <- list(RowNames1, ColNames1)
+
+lprec
+
+# The model can also be saved to a file
+write.lp(lprec, filename = "WP.lp", type = "lp")
+```
+
+
+```{r}
+solve(lprec)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+set up the WP problem.
+
+# make lp object with 
