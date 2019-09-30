@@ -1,0 +1,58 @@
+---
+title: "AED"
+author: "Aputta"
+date: "29/09/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(lpSolveAPI)
+```
+
+## R Markdown
+
+```
+# make lpobject with 0 constraints and 9 decision variable
+lprec <- make.lp(0,8)
+lp.control(lprec,sense='min')
+# now create the objective function thedefault is a minimization problem.
+set.objfn(lprec,c(622,614,630,0,641,645,649,0))
+
+add.constraint(lprec,c(1,1,1,1,0,0,0,0),"=",100)
+add.constraint(lprec,c(0,0,0,0,1,1,1,1),"=",120)
+add.constraint(lprec,c(1,0,0,0,1,0,0,0),"=",80)
+add.constraint(lprec,c(0,1,0,0,0,1,0,0),"=",60)
+add.constraint(lprec,c(0,0,1,0,0,0,1,0),"=",70)
+add.constraint(lprec,c(0,0,0,1,0,0,0,1),"=",10)
+
+##set.bounds(lprec, lower = c(0, 0),upper = c(10,10), columns = c(4,8 ))
+ColNames <- c( "x11",   "x12",   "x13",   "x14"   ,"x21",   "x22",   "x23",   "x24")
+
+RowNames <- c("R1", "R2", "R3", "R4", "R5", "R6")
+dimnames(lprec) <- list(RowNames, ColNames)
+
+lprec
+
+
+
+# The model can also be saved to a file
+write.lp(lprec, filename = "AED.lp", type = "lp")
+```
+
+```{r}
+solve (lprec)
+get.objective(lprec)
+get.variables(lprec)
+get.constraints(lprec)
+get.sensitivity.objex(lprec)
+get.sensitivity.rhs(lprec)
+```
+```
+
+
+
+
+```{r}
+```
+
+
